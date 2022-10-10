@@ -1,16 +1,19 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
-	"github.com/cokemine/ServerStatus-goclient/pkg/status"
-	"github.com/gorilla/websocket"
-	"github.com/vmihailenco/msgpack/v5"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/cokemine/ServerStatus-goclient/pkg/status"
+	"github.com/gorilla/websocket"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -47,7 +50,15 @@ type NodeStatus struct {
 }
 
 func connect() {
-	socket, _, err := websocket.DefaultDialer.Dial(*SERVER+"/connect", nil)
+	dial := websocket.Dialer{
+		Proxy:            http.ProxyFromEnvironment,
+		HandshakeTimeout: 45 * time.Second,
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+
+	socket, _, err := dial.Dial(*SERVER+"/connect", nil)
 	if err != nil {
 		log.Println("Caught Exception:", err.Error())
 		time.Sleep(5 * time.Second)
