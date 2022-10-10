@@ -4,8 +4,8 @@ Documentation=https://github.com/cokemine/nodestatus-client-go
 After=network.target
 
 [Service]
-EnvironmentFile=/usr/local/NodeStatus/client/config.conf
-ExecStart=/usr/local/NodeStatus/client/status-client --dsn $DSN
+EnvironmentFile=/etc/NodeStatus/config.conf
+ExecStart=/usr/local/bin/status-client --dsn $DSN
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 
